@@ -5,11 +5,12 @@
 #include "bfm.h"
 #include "matrix.h"
 
-#define WIDTH 200
-#define HEIGHT 300
+#define WIDTH 200*3
+#define HEIGHT 300*3
 
 int main() {
-  omp_set_num_teams(8);
+  omp_set_num_threads(8);
+  // omp_set_nested(1);
   double start;
   double end;
   

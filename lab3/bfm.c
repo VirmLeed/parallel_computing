@@ -43,14 +43,19 @@ int* match_parallel(matrix* A, matrix* B) {
     float min = FLT_MAX;
     int min_index = -1;
 
+    // #pragma omp parallel for
     for (int other_y = 0; other_y < A->h; other_y++) {
       float sum = 0;
+      // #pragma omp parallel for reduction(+:sum)
       for (int x = 0; x < A->w; x++)
         sum += pow((A_row[x] - B->v[other_y][x]), 2);
 
+      #pragma omp critical
+      {
       if (sum < min) {
         min = sum;
         min_index = other_y;
+      }
       }
     }
 
