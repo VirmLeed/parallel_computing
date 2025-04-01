@@ -4,16 +4,25 @@
 #include "bfm.h"
 #include "matrix.h"
 
-#define WIDTH 20
-#define HEIGHT 30
+#define WIDTH 2
+#define HEIGHT 9
 
 int main() {
+  printf("allocating matrices\n");
   matrix* A = create_matrix(WIDTH, HEIGHT);
   matrix* B = create_matrix(WIDTH, HEIGHT);
+
+  printf("printing matrices\n");
+  print_matrix(A);
+  print_matrix(B);
 
   printf("filling matrices\n");
   fill_matrix(A);
   fill_matrix(B);
+
+  printf("printing matrices\n");
+  print_matrix(A);
+  print_matrix(B);
 
   printf("brute-force matching\n");
   int* result = match(A, B);

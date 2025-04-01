@@ -12,13 +12,13 @@ int* match(matrix* A, matrix* B) {
 
   for (int y = 0; y < A->h; y++) {
     float* A_row = A->v[y];
+    float min = FLT_MAX;
     int min_index = -1;
 
     for (int other_y = 0; other_y < A->h; other_y++) {
-      float min = FLT_MAX;
-      int sum = 0;
+      float sum = 0;
       for (int x = 0; x < A->w; x++)
-        sum += pow((B->v[x][y] - A_row[x]), 2);
+        sum += pow((A_row[x] - B->v[other_y][x]), 2);
 
       if (sum < min) {
         min = sum;
