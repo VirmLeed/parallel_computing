@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <omp.h>
-#include "matrix.c"
 #include "bfm.c"
+#include "matrix.h"
 
 #define WIDTH 20
 #define HEIGHT 30

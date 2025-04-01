@@ -1,11 +1,5 @@
+#include "matrix.h"
 #include <stdlib.h>
-#include <stdatomic.h>
-
-typedef struct {
-  float** v;
-  int w;
-  int h;
-} matrix;
 
 matrix* create_matrix(int width, int height) {
   matrix* output = malloc(sizeof(matrix));

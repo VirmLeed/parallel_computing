@@ -1,7 +1,8 @@
 #include <math.h>
 #include <float.h>
 #include <assert.h>
-#include "matrix.c"
+#include <stdlib.h>
+#include "matrix.h"
 
 float* match(matrix* A, matrix* B) {
   assert(A->w == B->w && A->h == B->h);
@@ -10,7 +11,7 @@ float* match(matrix* A, matrix* B) {
   for (int y = 0; y < A->h; y++) {
     float* A_row = A->v[y];
     float min = FLT_MAX;
-    float min_index;
+    float min_index = -1;
 
     for (int other_y = 0; other_y < A->h; other_y++) {
       int sum = 0;
