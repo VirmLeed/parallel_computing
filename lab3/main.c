@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <omp.h>
-#include "bfm.c"
+#include <stdlib.h>
+#include "bfm.h"
 #include "matrix.h"
 
 #define WIDTH 20
@@ -15,7 +16,7 @@ int main() {
   fill_matrix(B);
 
   printf("brute-force matching\n");
-  float* result = match(A, B);
+  int* result = match(A, B);
 
   printf("freeing matrices\n");
   free_matrix(A);
@@ -23,7 +24,7 @@ int main() {
 
   printf("result:\n");
   for (int i = 0; i < HEIGHT; i++) {
-    printf("%f\n", result[i]);
+    printf("%d\n", result[i]);
   }
   free(result);
 

@@ -1,19 +1,21 @@
+#include "bfm.h"
+
 #include <math.h>
 #include <float.h>
 #include <assert.h>
 #include <stdlib.h>
 #include "matrix.h"
 
-float* match(matrix* A, matrix* B) {
+int* match(matrix* A, matrix* B) {
   assert(A->w == B->w && A->h == B->h);
-  float* output = malloc(sizeof(float) * A->h);
+  int* output = malloc(sizeof(float) * A->h);
 
   for (int y = 0; y < A->h; y++) {
     float* A_row = A->v[y];
-    float min = FLT_MAX;
-    float min_index = -1;
+    int min_index = -1;
 
     for (int other_y = 0; other_y < A->h; other_y++) {
+      float min = FLT_MAX;
       int sum = 0;
       for (int x = 0; x < A->w; x++)
         sum += pow((B->v[x][y] - A_row[x]), 2);

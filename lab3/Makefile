@@ -2,7 +2,7 @@
 CC = gcc
 CFLAGS = -Wall -Ofast -fopenmp 
 TARGET = lab
-SOURCES = main.c matrix.c
+SOURCES = main.c matrix.c bfm.c
 OBJECTS = $(SOURCES:.c=.o)
 
 # Rule to build the target
