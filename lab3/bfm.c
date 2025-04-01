@@ -15,7 +15,7 @@ float* match(matrix* A, matrix* B) {
     for (int other_y = 0; other_y < A->h; other_y++) {
       int sum = 0;
       for (int x = 0; x < A->w; x++)
-        sum += pow((B->v[x][y] - A->v[x][y]]), 2);
+        sum += pow((B->v[x][y] - A_row[x]), 2);
 
       if (sum < min) {
         min = sum;
