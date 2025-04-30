@@ -4,7 +4,9 @@ CFLAGS = -Wall -Ofast -fopenmp
 TARGET = lab
 SOURCES = main.c matrix.c bfm.c
 TEST_TARGET = lab_test
-TEST_SOURCES = test.c points.c
+TEST_SOURCES = test.c points.c kdtree.c
+MEASURE_TARGET = lab_measure
+MEASURE_SOURCES = measure.c points.c kdtree.c
 OBJECTS = $(SOURCES:.c=.o)
 
 # Rule to build the target
@@ -14,12 +16,18 @@ $(TARGET): src/$(SOURCES)
 $(TEST_TARGET): $(TEST_SOURCES)
 	$(CC) $(CFLAGS) -o $@ $^
 
+$(MEASURE_TARGET): $(MEASURE_SOURCES)
+	$(CC) $(CFLAGS) -o $@ $^
+
 # Run rule
 run: $(TARGET)
 	./$(TARGET)
 
 test: $(TEST_TARGET)
 	./$(TEST_TARGET)
+
+measure: $(MEASURE_TARGET)
+	./$(MEASURE_TARGET)
 
 # Clean rule
 clean:
