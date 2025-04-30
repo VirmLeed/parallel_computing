@@ -20,16 +20,18 @@ int main() {
 
   int DIM = 2;
   float DEV = 8*8;
+
+  double start,end;
+  FILE* output;
   
+  /*
   printf("\n\nCreation\n\n");
-  FILE* output = fopen("create.csv", "w");
+  output = fopen("create.csv", "w");
   fprintf(output, "points_amount,single");
   for (int t = 0; t < TT; t++) {
     fprintf(output, ",%d_thr", T[t]);
   }
   fprintf(output, "\n");
-
-  double start,end;
   
   for (int m = 0; m < MM; m++) {
     float** points;
@@ -52,7 +54,14 @@ int main() {
       for (int i = 0; i < 3; i++) {
         points = gen_random_points(M[m], DIM, DEV);
         start = omp_get_wtime();
-        Node* parallel = grow_tree_parallel(points, M[m], DIM, 0);
+        Node* parallel;
+        #pragma omp parallel
+        {
+          #pragma omp single
+          {
+            parallel = grow_tree_parallel(points, M[m], DIM, 0);
+          }
+        }
         end = omp_get_wtime();
         free_points(points, M[m]);
         
@@ -70,6 +79,9 @@ int main() {
   }
   fclose(output);
   
+  
+  
+  */
   printf("\n\nInsertion\n\n");
    
   output = fopen("insert.csv", "w");
@@ -81,6 +93,7 @@ int main() {
   
   float** points = gen_random_points(MM_FOR_INSERT, DIM, DEV);
   Node* root = grow_tree(points, MM_FOR_INSERT, DIM, 0);
+  free_points(points, MM_FOR_INSERT);
 
   double time = 0;
   float* point;
@@ -94,6 +107,36 @@ int main() {
   printf("insert single (x%d): %f\n", MM_FOR_INSERT, time);
   fprintf(output, "%d,%f", MM_FOR_INSERT, time);
   free_tree(root);
+
+  for (int t = 0; t < TT; t++) {
+    omp_set_num_threads(T[t]);
+      
+    printf("Threads: %d.\n", T[t]);
+
+    float** points = gen_random_points(MM_FOR_INSERT, DIM, DEV);
+    Node* root = grow_tree(points, MM_FOR_INSERT, DIM, 0);
+    free_points(points, MM_FOR_INSERT);
+
+    double time = 0;
+    float* point;
+    for (int measure = 0; measure < MM_FOR_INSERT; measure++) {
+      point = gen_random_point(DIM, DEV);
+      start = omp_get_wtime();
+      #pragma omp parallel
+      {
+        #pragma omp single
+        {
+          root = insert_point_parallel(root, point, DIM, 0);
+        }
+      }
+      end = omp_get_wtime();
+      time += end-start;
+    }
+    printf("insert threads %d: %f\n", T[t], time);
+    fprintf(output, "%d,%f", MM_FOR_INSERT, time);
+    free_tree(root);
+  }
+  fclose(output);
   
   
   
