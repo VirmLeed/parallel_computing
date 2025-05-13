@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 import threading
 from multiprocessing import Process, Pool
+from multiprocessing.dummy import Pool as thread_pool
 import time
 
 def extract_links(url):
@@ -20,10 +21,14 @@ def extract_links(url):
 
 def download_link(url):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0'
     }
     prefix = "https://www.consultant.ru"
-    response = requests.get(prefix + url, headers=headers)
+    try:
+        response = requests.get(prefix + url, headers=headers)
+    except requests.exceptions.ConnectionError:
+        print("connection failed " + prefix + url, end="\r")
+        return
     
     if response.status_code == 200:
         with open(f"files/{url.replace("/", "-")}.html", "w") as file:
@@ -53,15 +58,19 @@ def threading_download(links):
         thread.join()
 
 def multiprocessing_download(links):
-    with Pool(processes=500) as pool:
-        pool.map(download_link, links)
+    with Pool(processes=20) as pool:
+        list(tqdm(pool.map(download_link, links)))
+
+def threading_multiprocessing_download(links):
+    with thread_pool(processes=20) as pool:
+        pool.map(download_link, tqdm(links))
 
 url = 'https://www.consultant.ru/document/cons_doc_LAW_5142/'
-links = extract_links(url)
+links = extract_links(url)[:80]
 
 print("Starting threading download")
 start = time.time()
-threading_download(links)
+threading_multiprocessing_download(links)
 end = time.time()
 took = end - start
 print(f"Execution time: {took:.2f} seconds")

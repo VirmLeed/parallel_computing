@@ -5,22 +5,31 @@
 #include "kdtree.h"
 
 int main() {
-  int AMOUNT = 20;
+  int AMOUNT = 100;
   int DIM = 2;
-  float DEVIATION = 4;
-  
+  float DEVIATION = 8;
+
   printf("Sorting test\n");
   float** points = gen_random_points(AMOUNT, DIM, DEVIATION);
-  print_points(points, AMOUNT, DIM);
+  // print_points(points, AMOUNT, DIM);
   heapsort(points+1, 1, AMOUNT-1);
   printf("res\n");
-  print_points(points, AMOUNT, DIM);
+  // print_points(points, AMOUNT, DIM);
   free_points(points, AMOUNT);
 
   printf("Growing, inserting and distance test\n");
+  srand(1);
   points = gen_random_points(AMOUNT, DIM, DEVIATION);
-  print_points(points, AMOUNT, DIM);
+  // print_points(points, AMOUNT, DIM);
   Node* root = grow_tree(points, AMOUNT, DIM, 0);
+  free(points);
+
+  srand(1);
+  points = gen_random_points(AMOUNT, DIM, DEVIATION);
+  // print_points(points, AMOUNT, DIM);
+  Node* root2 = grow_tree_parallel(points, AMOUNT, DIM, 0);
+  free(points);
+  printf("Comparison %d\n", compare_trees(root, root2, DIM));
 
   float point[2] = {2, 2};
   root = insert_point(root, (float*)point, DIM, 0);

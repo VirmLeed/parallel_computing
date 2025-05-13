@@ -21,3 +21,5 @@ links = extract_links(url)
 
 for link in tqdm(links):
     result = download_link.delay(link)
+    with open(f"files/{url.replace("/", "-")}.html", "w") as file:
+      file.write(result.get(timeout = 10))

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <omp.h>
+#include <math.h>
 
 #include "kdtree.h"
 #include "points.h"
@@ -31,7 +32,7 @@ Node* grow_tree(float** points, int point_amount, int dim, int depth) {
 
 Node* grow_tree_parallel(float** points, int point_amount, int dim, int depth) {
   if (point_amount <= 0) return NULL;  
-  if (depth > 3) return grow_tree(points, point_amount, dim, depth);
+  if (depth > 4) return grow_tree(points, point_amount, dim, depth);
    
   int axis = depth % dim;
 
@@ -41,12 +42,18 @@ Node* grow_tree_parallel(float** points, int point_amount, int dim, int depth) {
 
   Node* node = create_node(dim);
   node->point = points[median];
-  #pragma omp task
-  node->left = grow_tree_parallel(points, median, dim, depth + 1);
-  #pragma omp task
-  node->right = grow_tree_parallel(points + median + 1, point_amount - median - 1, dim, depth + 1);
+  #pragma omp parallel sections
+  {
+    #pragma omp section
+    {
+      node->left = grow_tree_parallel(points, median, dim, depth + 1);
+    }
+    #pragma omp section
+    {
+      node->right = grow_tree_parallel(points + median + 1, point_amount - median - 1, dim, depth + 1);
+    }
+  }
 
-  #pragma omp taskwait
   return node;
 }
 
@@ -79,6 +86,19 @@ void free_tree(Node* node) {
   free_tree(node->left);
   free_tree(node->right);
   free(node);
+}
+
+int compare_trees(Node* a, Node* b, int dim) {
+  if (a == NULL || b == NULL) return 0;
+
+  for (int axis = 0; axis < dim; axis++) {
+    if (fabsf(a->point[axis] - b->point[axis]) > 0.001) {
+      printf("Points not equal %f %f\n", a->point[axis], b->point[axis]);
+      return 1;
+    }
+  }
+
+  return compare_trees(a->left, b->left, dim) || compare_trees(a->right, b->right, dim);
 }
 
 Node* insert_point(Node* root, float* point, int dim, int depth) {

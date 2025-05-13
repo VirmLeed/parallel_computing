@@ -26,12 +26,11 @@ def plot_kd_tree(node, depth=0, min_x=float('-4'), max_x=float('4'), min_y=float
 
     # Draw the split line
     if axis == 0:  # Vertical line
-        plt.plot([node.point[0], node.point[0]], [min_y, max_y], color=(0, 0, (10-depth*2.5)/10), linewidth=5-depth, linestyle="--")
-        print([node.point[0], node.point[0]], [min_y, max_y])
+        plt.plot([node.point[0], node.point[0]], [min_y, max_y], color="blue", linewidth=10-depth, linestyle="--")
         plot_kd_tree(node.left, depth + 1, min_x, node.point[0], min_y, max_y)
         plot_kd_tree(node.right, depth + 1, node.point[0], max_x, min_y, max_y)
     else:  # Horizontal line
-        plt.plot([min_x, max_x], [node.point[1], node.point[1]], color=(0, depth/3, (10-depth*2.5)/10), linewidth=5-depth, linestyle="--")
+        plt.plot([min_x, max_x], [node.point[1], node.point[1]], color="blue", linewidth=10-depth, linestyle="--")
         plot_kd_tree(node.left, depth + 1, min_x, max_x, min_y, node.point[1])
         plot_kd_tree(node.right, depth + 1, min_x, max_x, node.point[1], max_y)
         
