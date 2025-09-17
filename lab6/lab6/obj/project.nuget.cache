@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "wcgDgwqANU0=",
+  "success": true,
+  "projectFilePath": "/home/zen/homework/parallel/lab6/lab6/lab6.csproj",
+  "expectedPackageFiles": [
+    "/home/zen/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.4/microsoft.aspnetcore.app.ref.9.0.4.nupkg.sha512"
+  ],
+  "logs": []
+}

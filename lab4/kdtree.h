@@ -19,6 +19,6 @@ int compare_trees(Node* a, Node* b, int dim);
 Node* insert_point(Node* root, float* point, int dim, int depth);
 Node* insert_point_parallel(Node* root, float* point, int dim, int depth);
 void closest_neighbor(Node* root, int dim, float* target, int depth, Node** best, float* best_dist);
-void closest_neighbor(Node* root, int dim, float* target, int depth, Node** best, float* best_dist);
+void closest_neighbor_parallel(Node* root, int dim, float* target, int depth, Node** best, float* best_dist);
 
 #endif

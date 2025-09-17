@@ -32,7 +32,7 @@ Node* grow_tree(float** points, int point_amount, int dim, int depth) {
 
 Node* grow_tree_parallel(float** points, int point_amount, int dim, int depth) {
   if (point_amount <= 0) return NULL;  
-  if (depth > 4) return grow_tree(points, point_amount, dim, depth);
+  if (depth > 5) return grow_tree(points, point_amount, dim, depth);
    
   int axis = depth % dim;
 
@@ -42,16 +42,14 @@ Node* grow_tree_parallel(float** points, int point_amount, int dim, int depth) {
 
   Node* node = create_node(dim);
   node->point = points[median];
-  #pragma omp parallel sections
+  
+  #pragma omp parallel
   {
-    #pragma omp section
-    {
-      node->left = grow_tree_parallel(points, median, dim, depth + 1);
-    }
-    #pragma omp section
-    {
-      node->right = grow_tree_parallel(points + median + 1, point_amount - median - 1, dim, depth + 1);
-    }
+    #pragma omp task
+    node->left = grow_tree_parallel(points, median, dim, depth + 1);
+    #pragma omp task
+    node->right = grow_tree_parallel(points + median + 1, point_amount - median - 1, dim, depth + 1);
+    #pragma omp taskwait
   }
 
   return node;
@@ -127,7 +125,7 @@ Node* insert_point_parallel(Node* root, float* point, int dim, int depth) {
       node->left = node->right = NULL;
       return node;
   }
-  if (depth > 3) return insert_point(root, point, dim, depth);
+  if (depth > 1) return insert_point(root, point, dim, depth);
 
   int axis = depth % 2;
 
@@ -167,6 +165,7 @@ void closest_neighbor(Node* root, int dim, float* target, int depth, Node** best
 
 void closest_neighbor_parallel(Node* root, int dim, float* target, int depth, Node** best, float* best_dist) {
   if (root == NULL) return;
+  if (depth > 1) return closest_neighbor(root, dim, target, depth, best, best_dist);
 
   float dist = distance(root->point, target, dim);
 
@@ -180,11 +179,11 @@ void closest_neighbor_parallel(Node* root, int dim, float* target, int depth, No
   Node* other_branch = (next_branch == root->left) ? root->right : root->left;
 
   #pragma omp task shared(best, best_dist)
-  closest_neighbor(next_branch, dim, target, depth + 1, best, best_dist);
+  closest_neighbor_parallel(next_branch, dim, target, depth + 1, best, best_dist);
 
   float axis_dist = (target[axis] - root->point[axis]) * (target[axis] - root->point[axis]);
   if (axis_dist < *best_dist) {
     #pragma omp task shared(best, best_dist)
-    closest_neighbor(other_branch, dim, target, depth + 1, best, best_dist);
+    closest_neighbor_parallel(other_branch, dim, target, depth + 1, best, best_dist);
   }
 }

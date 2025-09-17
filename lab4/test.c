@@ -5,7 +5,7 @@
 #include "kdtree.h"
 
 int main() {
-  int AMOUNT = 100;
+  int AMOUNT = 800000;
   int DIM = 2;
   float DEVIATION = 8;
 
@@ -27,8 +27,16 @@ int main() {
   srand(1);
   points = gen_random_points(AMOUNT, DIM, DEVIATION);
   // print_points(points, AMOUNT, DIM);
-  Node* root2 = grow_tree_parallel(points, AMOUNT, DIM, 0);
-  free(points);
+  Node* root2 = create_node(DIM);
+  #pragma omp parallel
+  {
+    #pragma omp single
+    {
+      root2 = grow_tree_parallel(points, AMOUNT, DIM, 0);
+    }
+  }
+  // Node* root2 = grow_tree_parallel(points, AMOUNT, DIM, 0);
+  free_points(points, AMOUNT);
   printf("Comparison %d\n", compare_trees(root, root2, DIM));
 
   float point[2] = {2, 2};
@@ -44,7 +52,7 @@ int main() {
   
   printf("Closest neighbor: %f, %f\n", best[0]->point[0], best[0]->point[1]);
     
-  print_tree(root, DIM, 0);
+  // print_tree(root, DIM, 0);
   FILE* file = fopen("tree.txt", "w");
   save_tree(file, root, DIM);
   fclose(file);
